@@ -1,0 +1,2916 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#e74c3c">
+    <meta name="description" content="OK8 BetVision Pro - Sistema de Análise Preditiva">
+    <title>OK8 BetVision Pro</title>
+
+    <link rel="manifest" href="manifest.json">
+
+    <link rel="apple-touch-icon" href="https://cdn.jsdelivr.net/gh/twitter/twemoji/assets/svg/1f3af.svg">
+
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" . />
+    <script>
+        if (typeof navigator.serviceWorker !== 'undefined') {
+            navigator.serviceWorker.register('pwabuilder-sw.js');
+        }
+    </script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary: #0f1419;
+            --secondary: #1a232e;
+            --accent: #e74c3c;
+            --success: #27ae60;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+            --info: #3498db;
+            --text: #ffffff;
+            --text-secondary: #b0b7c3;
+        }
+
+        body {
+            background:
+                linear-gradient(135deg, rgba(15, 20, 25, 0.95), rgba(26, 35, 46, 0.95)),
+                var(--primary);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 0;
+            overflow-x: hidden;
+            background-attachment: fixed;
+            position: relative;
+        }
+
+        /* Background com logo OK8 transparente */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                linear-gradient(135deg, rgba(15, 20, 25, 0.85), rgba(26, 35, 46, 0.9));
+            background-repeat: no-repeat;
+            background-position: center 30%, center 70%;
+            background-size: 300px, 250px;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .mobile-app {
+            max-width: 400px;
+            margin: 0 auto;
+            min-height: 100vh;
+            background: linear-gradient(135deg, rgba(15, 20, 25, 0.9), rgba(26, 35, 46, 0.9));
+            position: relative;
+            backdrop-filter: blur(10px);
+        }
+
+        /* PWA Install Prompt */
+        .pwa-install-prompt {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, var(--secondary), var(--primary));
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            padding: 15px 20px;
+            z-index: 3000;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            display: none;
+            max-width: 350px;
+            width: 90%;
+        }
+
+        .pwa-prompt-content {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .pwa-prompt-icon {
+            font-size: 1.5em;
+        }
+
+        .pwa-prompt-text {
+            flex: 1;
+            font-size: 0.85em;
+        }
+
+        .pwa-prompt-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .pwa-install-btn {
+            padding: 8px 12px;
+            background: linear-gradient(135deg, var(--success), #2ecc71);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 0.8em;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .pwa-dismiss-btn {
+            padding: 8px 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: white;
+            font-size: 0.8em;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* Offline Indicator */
+        .offline-indicator {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: var(--danger);
+            color: white;
+            text-align: center;
+            padding: 8px;
+            font-size: 0.8em;
+            font-weight: 600;
+            z-index: 4000;
+            display: none;
+        }
+
+        /* Modal de Login */
+        .login-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .login-content {
+            background: linear-gradient(135deg, var(--secondary), var(--primary));
+            border-radius: 20px;
+            padding: 25px;
+            max-width: 350px;
+            width: 100%;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .login-title {
+            font-size: 1.4em;
+            font-weight: 700;
+            margin-bottom: 15px;
+            text-align: center;
+            color: var(--info);
+        }
+
+        .login-input {
+            width: 100%;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            color: white;
+            font-size: 1em;
+            margin-bottom: 15px;
+            backdrop-filter: blur(5px);
+        }
+
+        .login-input:focus {
+            outline: none;
+            border-color: var(--info);
+            box-shadow: 0 0 10px rgba(52, 152, 219, 0.3);
+        }
+
+        .login-input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .login-button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, var(--info), #2980b9);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+            margin-top: 10px;
+        }
+
+        .login-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+        }
+
+        .login-button:active {
+            transform: translateY(0);
+        }
+
+        .login-button:disabled {
+            background: linear-gradient(135deg, #7f8c8d, #95a5a6);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* Modal de Termos */
+        .terms-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 2001;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .terms-content {
+            background: linear-gradient(135deg, var(--secondary), var(--primary));
+            border-radius: 20px;
+            padding: 25px;
+            max-width: 350px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .terms-title {
+            font-size: 1.4em;
+            font-weight: 700;
+            margin-bottom: 15px;
+            text-align: center;
+            color: var(--accent);
+        }
+
+        .terms-text {
+            font-size: 0.85em;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            opacity: 0.9;
+        }
+
+        .terms-section {
+            margin-bottom: 15px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+
+        .terms-section-title {
+            font-size: 1em;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--info);
+        }
+
+        .terms-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+
+        .terms-checkbox input {
+            width: 18px;
+            height: 18px;
+        }
+
+        .terms-checkbox label {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        /* Confirmation Modal */
+        .confirmation-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 2002;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .confirmation-content {
+            background: linear-gradient(135deg, var(--secondary), var(--primary));
+            border-radius: 20px;
+            padding: 25px;
+            max-width: 350px;
+            width: 100%;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
+            text-align: center;
+        }
+
+        .confirmation-title {
+            font-size: 1.3em;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: var(--warning);
+        }
+
+        .confirmation-text {
+            font-size: 0.9em;
+            line-height: 1.5;
+            margin-bottom: 20px;
+            opacity: 0.9;
+        }
+
+        .confirmation-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .confirm-button {
+            flex: 1;
+            padding: 12px;
+            background: linear-gradient(135deg, var(--success), #2ecc71);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+        }
+
+        .confirm-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(39, 174, 96, 0.4);
+        }
+
+        .cancel-button {
+            flex: 1;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+        }
+
+        .cancel-button:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        /* Header com Menu Hamburguer */
+        .app-header {
+            background:
+                linear-gradient(135deg, rgba(231, 76, 60, 0.9), rgba(192, 57, 43, 0.9)),
+                url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 200" opacity="0.1"><text x="50%" y="50%" font-family="Arial" font-size="80" font-weight="bold" fill="white" text-anchor="middle" dominant-baseline="middle">OK8</text></svg>'),
+                linear-gradient(135deg, #e74c3c, #c0392b);
+            padding: 50px 25px 25px 25px;
+            text-align: center;
+            position: relative;
+            border-radius: 0 0 30px 30px;
+            box-shadow: 0 10px 30px rgba(231, 76, 60, 0.3);
+            overflow: hidden;
+        }
+
+        .app-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background:
+                radial-gradient(circle at 20% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.05) 0%, transparent 50%),
+                url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" opacity="0.03"><text x="50%" y="50%" font-family="Arial" font-size="30" font-weight="bold" fill="white" text-anchor="middle" dominant-baseline="middle">OK8</text></svg>');
+            background-size: cover, cover, 100px 100px;
+            pointer-events: none;
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 15px;
+            position: relative;
+            z-index: 2;
+            gap: 15px;
+        }
+
+        .menu-button {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 8px;
+            padding: 8px 12px;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            position: absolute;
+            left: 0;
+        }
+
+        .menu-hamburger {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            width: 20px;
+        }
+
+        .menu-hamburger span {
+            height: 2px;
+            background: white;
+            border-radius: 1px;
+            transition: all 0.3s ease;
+        }
+
+        .menu-hamburger span:nth-child(1) {
+            width: 100%;
+        }
+
+        .menu-hamburger span:nth-child(2) {
+            width: 80%;
+        }
+
+        .menu-hamburger span:nth-child(3) {
+            width: 60%;
+        }
+
+        .menu-button:hover .menu-hamburger span {
+            width: 100%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .app-logo {
+            font-size: 2.8em;
+            margin-bottom: 10px;
+            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .app-title {
+            font-size: 1.8em;
+            font-weight: 800;
+            margin-bottom: 5px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .app-subtitle {
+            font-size: 0.9em;
+            opacity: 0.9;
+            margin-bottom: 15px;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        .ok8-badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            text-align: center;
+        }
+
+        /* Menu Lateral */
+        .side-menu {
+            position: fixed;
+            top: 0;
+            left: -300px;
+            width: 280px;
+            height: 100%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            backdrop-filter: blur(20px);
+            z-index: 1000;
+            transition: left 0.3s ease;
+            box-shadow: 5px 0 30px rgba(0, 0, 0, 0.5);
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .side-menu.active {
+            left: 0;
+        }
+
+        .menu-header {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            padding: 60px 20px 20px 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .menu-title {
+            font-size: 1.4em;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .menu-subtitle {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        .menu-content {
+            padding: 20px;
+        }
+
+        .menu-item {
+            padding: 15px;
+            margin-bottom: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .menu-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateX(5px);
+        }
+
+        .menu-item.register {
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+            border: none;
+            font-weight: 700;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .menu-item.register:hover {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            transform: translateX(5px) scale(1.02);
+        }
+
+        /* NOVO: Estilo para a versão demo no menu */
+        .demo-version {
+            text-align: center;
+            margin-top: 20px;
+            padding: 15px 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .demo-line {
+            font-size: 1.2em;
+            color: rgba(255, 255, 255, 0.6);
+            letter-spacing: 2px;
+            margin: 5px 0;
+        }
+
+        .demo-text {
+            font-size: 0.9em;
+            font-weight: 800;
+            color: #9b59b6;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin: 8px 0;
+            text-shadow: 0 0 10px rgba(155, 89, 182, 0.5);
+        }
+
+        .menu-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .menu-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+            z-index: 999;
+            display: none;
+        }
+
+        .menu-overlay.active {
+            display: block;
+        }
+
+        /* Status Bar */
+        .status-bar {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+            background:
+                linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05)),
+                url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 100" opacity="0.02"><text x="50%" y="50%" font-family="Arial" font-size="40" font-weight="bold" fill="white" text-anchor="middle" dominant-baseline="middle">OK8</text></svg>');
+            margin: -20px 20px 20px 20px;
+            padding: 20px;
+            border-radius: 20px;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            z-index: 3;
+        }
+
+        .status-item {
+            text-align: center;
+        }
+
+        .status-label {
+            font-size: 0.75em;
+            opacity: 0.7;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-value {
+            font-size: 1.3em;
+            font-weight: 800;
+            color: var(--info);
+        }
+
+        .status-value.ready {
+            color: var(--success);
+        }
+
+        .status-value.analyzing {
+            color: var(--warning);
+        }
+
+        .status-value.error {
+            color: var(--danger);
+        }
+
+        /* Time Display */
+        .time-display {
+            text-align: center;
+            margin: 15px 20px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .brasilia-time {
+            font-size: 1.1em;
+            font-weight: 700;
+            margin-bottom: 5px;
+            color: var(--info);
+        }
+
+        .time-label {
+            font-size: 0.8em;
+            opacity: 0.7;
+        }
+
+        /* Game ID Input */
+        .game-id-section {
+            margin: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .game-id-label {
+            font-size: 0.9em;
+            font-weight: 600;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .game-id-input {
+            width: 100%;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            color: white;
+            font-size: 1em;
+            margin-bottom: 10px;
+            backdrop-filter: blur(5px);
+        }
+
+        .game-id-input:focus {
+            outline: none;
+            border-color: var(--info);
+            box-shadow: 0 0 10px rgba(52, 152, 219, 0.3);
+        }
+
+        .game-id-input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .input-hint {
+            font-size: 0.75em;
+            opacity: 0.7;
+            margin-top: 5px;
+        }
+
+        .id-preview {
+            font-size: 0.8em;
+            margin-top: 8px;
+            padding: 8px;
+            background: rgba(52, 152, 219, 0.2);
+            border-radius: 6px;
+            border-left: 3px solid var(--info);
+            backdrop-filter: blur(5px);
+        }
+
+        .error-message {
+            color: var(--danger);
+            font-size: 0.8em;
+            margin-top: 5px;
+            text-align: center;
+            display: none;
+        }
+
+        /* ID Confirmation Button */
+        .id-confirm-section {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .confirm-button {
+            flex: 1;
+            padding: 12px;
+            background: linear-gradient(135deg, var(--info), #2980b9);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+        }
+
+        .confirm-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+        }
+
+        .confirm-button:active {
+            transform: translateY(0);
+        }
+
+        .confirm-button.confirmed {
+            background: linear-gradient(135deg, var(--success), #2ecc71);
+        }
+
+        .clear-button {
+            padding: 12px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+        }
+
+        .clear-button:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        /* Main Content */
+        .app-content {
+            padding: 0 20px 20px 20px;
+        }
+
+        /* Scan Button */
+        .scan-section {
+            margin: 20px 0;
+        }
+
+        .scan-button {
+            width: 100%;
+            padding: 22px;
+            background: linear-gradient(135deg, var(--success), #2ecc71);
+            border: none;
+            border-radius: 18px;
+            color: white;
+            font-size: 1.1em;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(39, 174, 96, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            backdrop-filter: blur(5px);
+        }
+
+        .scan-button:active:not(.blocked):not(.loading):not(.disabled) {
+            transform: scale(0.95);
+            box-shadow: 0 4px 15px rgba(39, 174, 96, 0.6);
+        }
+
+        .scan-button.loading {
+            background: linear-gradient(135deg, var(--warning), #e67e22);
+            cursor: not-allowed;
+        }
+
+        .scan-button.blocked {
+            background: linear-gradient(135deg, #95a5a6, #7f8c8d);
+            cursor: not-allowed;
+            box-shadow: 0 4px 15px rgba(149, 165, 166, 0.4);
+        }
+
+        .scan-button.disabled {
+            background: linear-gradient(135deg, #7f8c8d, #95a5a6);
+            cursor: not-allowed;
+            box-shadow: 0 4px 15px rgba(149, 165, 166, 0.4);
+        }
+
+        .timer-display {
+            font-size: 0.9em;
+            font-weight: 600;
+            margin-top: 5px;
+        }
+
+        /* Recommendation Card */
+        .recommendation-card {
+            background:
+                linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05)),
+                url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 200" opacity="0.02"><text x="50%" y="50%" font-family="Arial" font-size="60" font-weight="bold" fill="white" text-anchor="middle" dominant-baseline="middle">OK8</text></svg>');
+            border-radius: 20px;
+            padding: 25px;
+            margin: 20px 0;
+            border-left: 6px solid var(--warning);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+        }
+
+        .recommendation-card.high {
+            border-left-color: var(--success);
+            background:
+                linear-gradient(135deg, rgba(39, 174, 96, 0.15), rgba(39, 174, 96, 0.05)),
+                url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 200" opacity="0.02"><text x="50%" y="50%" font-family="Arial" font-size="60" font-weight="bold" fill="white" text-anchor="middle" dominant-baseline="middle">OK8</text></svg>');
+        }
+
+        .recommendation-card.low {
+            border-left-color: var(--danger);
+            background:
+                linear-gradient(135deg, rgba(231, 76, 60, 0.15), rgba(231, 76, 60, 0.05)),
+                url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 200" opacity="0.02"><text x="50%" y="50%" font-family="Arial" font-size="60" font-weight="bold" fill="white" text-anchor="middle" dominant-baseline="middle">OK8</text></svg>');
+        }
+
+        .signal-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .signal-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        .signal-high {
+            background: var(--success);
+        }
+
+        .signal-medium {
+            background: var(--warning);
+        }
+
+        .signal-low {
+            background: var(--danger);
+        }
+
+        .recommendation-title {
+            font-size: 1.2em;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .recommendation-desc {
+            font-size: 0.9em;
+            opacity: 0.9;
+            line-height: 1.5;
+            margin-bottom: 15px;
+        }
+
+        .confidence-level {
+            font-size: 0.8em;
+            opacity: 0.8;
+        }
+
+        /* Games Tabs */
+        .games-tabs {
+            display: flex;
+            margin: 20px 0 15px 0;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 5px;
+            backdrop-filter: blur(10px);
+        }
+
+        .tab-button {
+            flex: 1;
+            padding: 12px 10px;
+            text-align: center;
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .tab-button.active {
+            background: rgba(52, 152, 219, 0.2);
+            color: var(--info);
+            box-shadow: 0 2px 8px rgba(52, 152, 219, 0.3);
+        }
+
+        /* Games Grid */
+        .section-title {
+            font-size: 1.1em;
+            font-weight: 700;
+            margin: 30px 0 15px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .game-card {
+            background:
+                rgba(255, 255, 255, 0.07),
+                url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" opacity="0.03"><text x="50%" y="50%" font-family="Arial" font-size="40" font-weight="bold" fill="white" text-anchor="middle" dominant-baseline="middle">OK8</text></svg>');
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .game-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(135deg, var(--info), #2980b9);
+        }
+
+        .game-card.high::before {
+            background: linear-gradient(135deg, var(--success), #2ecc71);
+        }
+
+        .game-card.medium::before {
+            background: linear-gradient(135deg, var(--warning), #e67e22);
+        }
+
+        .game-card.low::before {
+            background: linear-gradient(135deg, var(--danger), #c0392b);
+        }
+
+        .game-card.coming-soon {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px dashed rgba(255, 255, 255, 0.2);
+        }
+
+        .game-card.coming-soon::before {
+            background: linear-gradient(135deg, #9b59b6, #8e44ad);
+        }
+
+        .game-icon {
+            font-size: 2.2em;
+            margin-bottom: 10px;
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+        }
+
+        .game-name {
+            font-size: 0.85em;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .game-confidence {
+            font-size: 1.1em;
+            font-weight: 800;
+            margin: 8px 0;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .game-confidence.show {
+            opacity: 1;
+        }
+
+        .game-timing {
+            font-size: 0.7em;
+            opacity: 0.8;
+            margin: 5px 0;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .timing-item {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+        }
+
+        .timing-icon {
+            font-size: 0.9em;
+        }
+
+        .game-trend {
+            font-size: 0.7em;
+            opacity: 0.8;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .game-trend.show {
+            opacity: 1;
+        }
+
+        .strategy-button {
+            width: 100%;
+            padding: 10px;
+            background: linear-gradient(135deg, #9b59b6, #8e44ad);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 0.75em;
+            font-weight: 600;
+            margin-top: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+        }
+
+        .strategy-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(155, 89, 182, 0.4);
+        }
+
+        .strategy-button:active {
+            transform: translateY(0);
+        }
+
+        .strategy-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .strategy-modal.active {
+            display: flex;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .strategy-content {
+            background:
+                linear-gradient(135deg, var(--secondary), var(--primary)),
+                url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" opacity="0.05"><text x="50%" y="50%" font-family="Arial" font-size="80" font-weight="bold" fill="white" text-anchor="middle" dominant-baseline="middle">OK8</text></svg>');
+            border-radius: 20px;
+            padding: 25px;
+            max-width: 350px;
+            width: 100%;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
+            position: relative;
+            backdrop-filter: blur(20px);
+        }
+
+        .strategy-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .strategy-game-icon {
+            font-size: 2em;
+        }
+
+        .strategy-title {
+            font-size: 1.2em;
+            font-weight: 700;
+        }
+
+        .strategy-details {
+            font-size: 0.9em;
+            line-height: 1.5;
+            margin-bottom: 20px;
+            opacity: 0.9;
+        }
+
+        .strategy-tips {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 15px;
+            margin: 15px 0;
+            backdrop-filter: blur(5px);
+        }
+
+        .strategy-tip {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            margin-bottom: 8px;
+            font-size: 0.8em;
+        }
+
+        .strategy-tip:last-child {
+            margin-bottom: 0;
+        }
+
+        .tip-icon {
+            color: var(--success);
+            font-size: 0.9em;
+            margin-top: 2px;
+        }
+
+        .close-strategy {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, var(--info), #2980b9);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+            backdrop-filter: blur(5px);
+        }
+
+        .placeholder-text {
+            font-size: 0.8em;
+            opacity: 0.6;
+            margin-top: 8px;
+        }
+
+        .coming-soon-text {
+            font-size: 0.75em;
+            color: #9b59b6;
+            font-weight: 600;
+            margin-top: 5px;
+        }
+
+        /* History */
+        .history-section {
+            margin-top: 25px;
+        }
+
+        .history-list {
+            background:
+                rgba(255, 255, 255, 0.05),
+                url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 200" opacity="0.02"><text x="50%" y="50%" font-family="Arial" font-size="60" font-weight="bold" fill="white" text-anchor="middle" dominant-baseline="middle">OK8</text></svg>');
+            border-radius: 16px;
+            padding: 15px;
+            max-height: 200px;
+            overflow-y: auto;
+            backdrop-filter: blur(10px);
+        }
+
+        .history-item {
+            padding: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.85em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .history-item:last-child {
+            border-bottom: none;
+        }
+
+        .history-time {
+            font-size: 0.75em;
+            opacity: 0.6;
+            min-width: 45px;
+        }
+
+        /* Animations */
+        @keyframes pulse {
+            0% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        .slide-in {
+            animation: slideIn 0.5s ease;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.8s ease;
+        }
+
+        /* Loading */
+        .loading-dots {
+            display: inline-flex;
+            gap: 4px;
+        }
+
+        .loading-dots span {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: currentColor;
+            animation: loading 1.4s infinite ease-in-out;
+        }
+
+        .loading-dots span:nth-child(1) {
+            animation-delay: -0.32s;
+        }
+
+        .loading-dots span:nth-child(2) {
+            animation-delay: -0.16s;
+        }
+
+        @keyframes loading {
+
+            0%,
+            80%,
+            100% {
+                transform: scale(0);
+            }
+
+            40% {
+                transform: scale(1);
+            }
+        }
+
+        .pulse-glow {
+            animation: pulseGlow 2s infinite;
+        }
+
+        @keyframes pulseGlow {
+
+            0%,
+            100% {
+                box-shadow: 0 0 20px rgba(39, 174, 96, 0.4);
+            }
+
+            50% {
+                box-shadow: 0 0 30px rgba(39, 174, 96, 0.8);
+            }
+        }
+
+        .active-now {
+            color: var(--success);
+            font-weight: 600;
+        }
+
+        .waiting {
+            color: var(--warning);
+            font-weight: 600;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        /* Update Progress (removido) */
+        .update-progress {
+            display: none;
+        }
+
+        /* Responsividade para mobile */
+        @media (max-width: 480px) {
+            .ok8-badge {
+                font-size: 0.7em;
+                padding: 5px 12px;
+            }
+
+            .header-top {
+                gap: 8px;
+            }
+        }
+
+        @media (max-width: 380px) {
+            .header-top {
+                flex-direction: column;
+                align-items: center;
+                gap: 10px;
+            }
+
+            .menu-button {
+                position: relative;
+                left: auto;
+            }
+
+            .ok8-badge {
+                order: 2;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Offline Indicator -->
+    <div class="offline-indicator" id="offlineIndicator">
+        ⚠️ Você está offline - Algumas funcionalidades podem não estar disponíveis
+    </div>
+
+    <!-- PWA Install Prompt -->
+    <div class="pwa-install-prompt" id="pwaInstallPrompt">
+        <div class="pwa-prompt-content">
+            <div class="pwa-prompt-icon">📱</div>
+            <div class="pwa-prompt-text">
+                <strong>Instalar App</strong><br>
+                Adicione à tela inicial para melhor experiência
+            </div>
+            <div class="pwa-prompt-buttons">
+                <button class="pwa-install-btn" id="pwaInstallBtn">Instalar</button>
+                <button class="pwa-dismiss-btn" id="pwaDismissBtn">Agora não</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Login -->
+    <div class="login-modal" id="loginModal">
+        <div class="login-content">
+            <div class="login-title">🔐 LOGIN</div>
+            <input type="email" class="login-input" id="loginEmail" placeholder="Digite seu email">
+            <input type="password" class="login-input" id="loginPassword" placeholder="Digite sua senha">
+            <button class="login-button" id="loginButton" onclick="loginUser()">ENTRAR</button>
+            <div style="text-align: center; margin-top: 15px; font-size: 0.8em; opacity: 0.7;">
+                Não tem conta? <a href="#" onclick="openRegistration()" style="color: var(--info);">Cadastre-se</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Termos de Serviço -->
+    <div class="terms-modal" id="termsModal">
+        <div class="terms-content">
+            <div class="terms-title">📋 TERMOS DE USO</div>
+
+            <div class="terms-section">
+                <div class="terms-section-title">⚠️ AVISO IMPORTANTE</div>
+                <div class="terms-text">
+                    Este aplicativo <strong>NÃO GARANTE 100% DE GANHOS</strong>. Foi desenvolvido para ajudar a diminuir
+                    as perdas e aumentar suas chances de sucesso, mas <strong>NÃO elimina completamente os
+                        riscos</strong>.
+                </div>
+            </div>
+
+            <div class="terms-section">
+                <div class="terms-section-title">🎯 FINALIDADE DO APP</div>
+                <div class="terms-text">
+                    O OK8 BetVision Pro é um sistema de análise preditiva que utiliza algoritmos para sugerir horários e
+                    estratégias com base em padrões estatísticos.
+                </div>
+            </div>
+
+            <div class="terms-section">
+                <div class="terms-section-title">📊 LIMITAÇÕES</div>
+                <div class="terms-text">
+                    • Não garantimos lucros<br>
+                    • Apostas envolvem riscos financeiros<br>
+                    • Resultados passados não garantem resultados futuros<br>
+                    • Use com responsabilidade
+                </div>
+            </div>
+
+            <div class="terms-section">
+                <div class="terms-section-title">👤 RESPONSABILIDADE DO USUÁRIO</div>
+                <div class="terms-text">
+                    • Estabeleça limites de gastos<br>
+                    • Não aposte mais do que pode perder<br>
+                    • Mantenha o controle emocional<br>
+                    • Busque ajuda se necessário
+                </div>
+            </div>
+
+            <div class="terms-checkbox">
+                <input type="checkbox" id="acceptTerms">
+                <label for="acceptTerms">Li e concordo com os Termos de Uso</label>
+            </div>
+
+            <button class="confirm-button" onclick="acceptTerms()" style="width: 100%;" disabled id="acceptButton">
+                ACEITAR E CONTINUAR
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal de Confirmação de ID -->
+    <div class="confirmation-modal" id="confirmationModal">
+        <div class="confirmation-content">
+            <div class="confirmation-title">⚠️ CONFIRMAÇÃO DE ID</div>
+            <div class="confirmation-text">
+                Você tem certeza de que o ID <strong id="confirmationIdText"></strong> está correto?
+                <br><br>
+                <strong>ATENÇÃO:</strong> Após confirmar, você <strong>NÃO poderá trocar este ID</strong> no futuro.
+                Certifique-se de que é o ID correto da sua conta OK8.
+            </div>
+            <div class="confirmation-buttons">
+                <button class="confirm-button" onclick="finalizeUserIdConfirmation()">SIM, ESTÁ CORRETO</button>
+                <button class="cancel-button" onclick="cancelUserIdConfirmation()">NÃO, QUERO CORRIGIR</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Menu Overlay -->
+    <div class="menu-overlay" id="menuOverlay" onclick="closeMenu()"></div>
+
+    <!-- Side Menu -->
+    <div class="side-menu" id="sideMenu">
+        <div class="menu-header">
+            <button class="menu-close" onclick="closeMenu()">✕</button>
+            <div class="menu-title">OK8 BetVision</div>
+            <div class="menu-subtitle">Sistema de Análise Preditiva</div>
+        </div>
+        <!-- Menu Content -->
+        <div class="menu-content">
+            <div class="menu-item" onclick="showInfo('Sobre o Sistema')">
+                ℹ️ Sobre o Sistema
+            </div>
+            <div class="menu-item" onclick="showInfo('Horário oficial de Brasília sincronizado com servidores OK8')">
+                ⏰ Horário OK8
+            </div>
+            <div class="menu-item" onclick="showInfo('Análises realizadas sob demanda pelo usuário')">
+                🔄 Atualizações
+            </div>
+            <div class="menu-item" onclick="showEmailSection()">
+                📧 Meu Email
+            </div>
+            <div class="menu-item" onclick="showContactSection()">
+                💌 Enviar Dica/Feedback
+            </div>
+            <div class="menu-item register" onclick="openRegistration()">
+                📝 Não é cadastrado ainda?<br>Cadastre-se já!
+            </div>
+
+            <!-- NOVO: Versão Demo com 3 riscos -->
+            <div class="demo-version">
+                <div class="demo-line">___</div>
+                <div class="demo-text">VERSÃO DEMO</div>
+                <div class="demo-line">___</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mobile-app">
+        <!-- Header -->
+        <div class="app-header">
+            <div class="header-top">
+                <button class="menu-button" onclick="openMenu()">
+                    <div class="menu-hamburger">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                </button>
+                <div class="ok8-badge">
+                    🔗 Conectado com OK8
+                </div>
+                <!-- BADGE VERSÃO DEMO REMOVIDO -->
+            </div>
+            <div class="header-content">
+                <div class="app-logo">🎯</div>
+                <h1 class="app-title">OK8 BetVision Pro</h1>
+                <p class="app-subtitle">Sistema de Análise Preditiva</p>
+            </div>
+        </div>
+
+        <!-- Status Bar -->
+        <div class="status-bar">
+            <div class="status-item">
+                <div class="status-label">Status</div>
+                <div class="status-value ready" id="statusValue">PRONTO</div>
+            </div>
+            <div class="status-item">
+                <div class="status-label">Confiança</div>
+                <div class="status-value" id="confidenceValue">100%</div>
+            </div>
+            <div class="status-item">
+                <div class="status-label">Sinais</div>
+                <div class="status-value" id="signalsValue">2</div>
+            </div>
+        </div>
+
+        <!-- Time Display -->
+        <div class="time-display">
+            <div class="brasilia-time" id="brasiliaTime">21:11:06</div>
+            <div class="time-label">Hora Oficial de Brasília</div>
+        </div>
+
+        <!-- Seção de Email (oculta inicialmente) -->
+        <div class="game-id-section" id="emailSection" style="display: none;">
+            <div class="game-id-label">
+                <span>📧</span>
+                MEU EMAIL
+            </div>
+            <div class="id-preview" id="emailPreview">
+                Email atual: <strong id="emailPreviewText">Não definido</strong>
+            </div>
+            <input type="email" class="game-id-input" id="userEmailInput" placeholder="Digite seu email para login"
+                value="">
+            <div class="input-hint">
+                Seu email será usado para login e recuperação de conta
+            </div>
+            <div class="id-confirm-section">
+                <button class="confirm-button" onclick="saveUserEmail()">
+                    💾 SALVAR EMAIL
+                </button>
+                <button class="clear-button" onclick="hideEmailSection()">
+                    VOLTAR
+                </button>
+            </div>
+        </div>
+
+        <!-- Seção de Contato (oculta inicialmente) -->
+        <div class="game-id-section" id="contactSection" style="display: none;">
+            <div class="game-id-label">
+                <span>💌</span>
+                ENVIAR MENSAGEM
+            </div>
+            <input type="text" class="game-id-input" id="contactSubject" placeholder="Assunto da mensagem" value="">
+            <textarea class="game-id-input" id="contactMessage" placeholder="Digite sua mensagem, dica ou feedback..."
+                style="height: 100px; resize: vertical;"></textarea>
+            <div class="input-hint">
+                Sua mensagem será enviada para: wwwcelsouverney@gmail.com
+            </div>
+            <div class="id-confirm-section">
+                <button class="confirm-button" onclick="sendContactMessage()">
+                    📤 ENVIAR MENSAGEM
+                </button>
+                <button class="clear-button" onclick="hideContactSection()">
+                    VOLTAR
+                </button>
+            </div>
+        </div>
+
+        <!-- Game ID Input -->
+        <div class="game-id-section" id="mainContent">
+            <div class="game-id-label">
+                <span>🆔</span>
+                ID do Jogador OK8
+            </div>
+            <input type="text" class="game-id-input" id="gameIdInput"
+                placeholder="Digite seu ID da plataforma OK8 (ex: 745849009)" maxlength="20" value="">
+            <div class="input-hint">
+                Digite seu ID numérico da plataforma OK8 (9-10 dígitos)
+            </div>
+            <div class="id-preview" id="idPreview" style="display: none;">
+                ID detectado: <strong id="idPreviewText"></strong>
+            </div>
+            <div class="error-message" id="idError">
+                ❌ ID inválido. Digite um ID numérico de 6 a 20 dígitos.
+            </div>
+
+            <!-- Botões de confirmação -->
+            <div class="id-confirm-section">
+                <button class="confirm-button" id="confirmButton" onclick="confirmUserId()">
+                    CONFIRMAR ID
+                </button>
+                <button class="clear-button" id="clearButton" onclick="clearUserId()">
+                    LIMPAR
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="app-content">
+            <!-- Scan Button -->
+            <div class="scan-section">
+                <button class="scan-button pulse-glow" id="scanButton" onclick="startAnalysis()">
+                    <span>🔍</span>
+                    <div>
+                        <div>INICIAR PRIMEIRA ANÁLISE</div>
+                        <div class="timer-display" id="timerDisplay"></div>
+                    </div>
+                </button>
+            </div>
+
+            <!-- Recommendation -->
+            <div id="recommendationArea">
+                <div class="recommendation-card">
+                    <div class="signal-indicator">
+                        <div class="signal-dot signal-medium"></div>
+                        <span>SISTEMA PRONTO</span>
+                    </div>
+                    <div class="recommendation-title">PRONTO PARA ANÁLISE ✅</div>
+                    <div class="recommendation-desc">
+                        Sistema inicializado e pronto para primeira análise preditiva.
+                    </div>
+                    <div class="confidence-level">Digite seu ID OK8 e clique em "INICIAR PRIMEIRA ANÁLISE"</div>
+                </div>
+            </div>
+
+            <!-- Games Tabs -->
+            <div class="games-tabs">
+                <button class="tab-button active" onclick="switchTab('tab1')">JOGOS PRINCIPAIS</button>
+                <button class="tab-button" onclick="switchTab('tab2')">MAIS JOGOS</button>
+            </div>
+
+            <!-- Tab 1: Jogos Principais -->
+            <div class="tab-content active" id="tab1">
+                <div class="section-title">
+                    <span>🎮</span>
+                    JOGOS DISPONÍVEIS
+                </div>
+                <div class="games-grid" id="gamesGrid1">
+                    <!-- Jogos principais serão carregados aqui -->
+                </div>
+            </div>
+
+            <!-- Tab 2: Mais Jogos -->
+            <div class="tab-content" id="tab2">
+                <div class="section-title">
+                    <span>🎰</span>
+                    MAIS JOGOS POPULARES
+                </div>
+                <div class="games-grid" id="gamesGrid2">
+                    <!-- Jogos adicionais serão carregados aqui -->
+                </div>
+            </div>
+
+            <!-- History -->
+            <div class="section-title">
+                <span>📋</span>
+                HISTÓRICO DO SISTEMA
+            </div>
+            <div class="history-section">
+                <div class="history-list" id="historyList">
+                    <div class="history-item">
+                        <span class="history-time">[SYS]</span>
+                        <span>Sistema desenvolvido para análise preditiva de jogos da plataforma OK8</span>
+                    </div>
+                    <div class="history-item">
+                        <span class="history-time">[OK8]</span>
+                        <span>Horário oficial de Brasília sincronizado com servidores OK8</span>
+                    </div>
+                    <div class="history-item">
+                        <span class="history-time">[SYS]</span>
+                        <span>Análises realizadas sob demanda do usuário</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal de Estratégia -->
+        <div class="strategy-modal" id="strategyModal">
+            <div class="strategy-content">
+                <div class="strategy-header">
+                    <div class="strategy-game-icon" id="strategyGameIcon">🎮</div>
+                    <div class="strategy-title" id="strategyGameName">Nome do Jogo</div>
+                </div>
+                <div class="strategy-details" id="strategyDetails">
+                    Carregando estratégia...
+                </div>
+                <div class="strategy-tips">
+                    <div class="strategy-tip">
+                        <span class="tip-icon">💡</span>
+                        <span id="strategyTip1">Dica estratégica 1</span>
+                    </div>
+                    <div class="strategy-tip">
+                        <span class="tip-icon">💡</span>
+                        <span id="strategyTip2">Dica estratégica 2</span>
+                    </div>
+                    <div class="strategy-tip">
+                        <span class="tip-icon">💡</span>
+                        <span id="strategyTip3">Dica estratégica 3</span>
+                    </div>
+                </div>
+                <button class="close-strategy" onclick="closeStrategy()">FECHAR ESTRATÉGIA</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ========== CONFIGURAÇÃO PWA ==========
+        // Registrar Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', async () => {
+                try {
+                    const registration = await navigator.serviceWorker.register('/sw.js');
+                    console.log('ServiceWorker registrado com sucesso:', registration);
+
+                    // Verificar se há atualizações
+                    registration.addEventListener('updatefound', () => {
+                        const newWorker = registration.installing;
+                        console.log('Nova versão do Service Worker encontrada!');
+
+                        newWorker.addEventListener('statechange', () => {
+                            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                // Nova versão disponível
+                                if (betVisionSystem) {
+                                    betVisionSystem.addToHistory('🔄 Nova versão disponível! Atualize o app.');
+                                }
+                            }
+                        });
+                    });
+                } catch (error) {
+                    console.log('Falha ao registrar ServiceWorker:', error);
+                }
+            });
+        }
+
+        // Detectar se está offline
+        window.addEventListener('online', updateOnlineStatus);
+        window.addEventListener('offline', updateOnlineStatus);
+
+        function updateOnlineStatus() {
+            const offlineIndicator = document.getElementById('offlineIndicator');
+            if (!navigator.onLine) {
+                offlineIndicator.style.display = 'block';
+                if (betVisionSystem) {
+                    betVisionSystem.addToHistory('🌐 Conexão perdida - Modo offline');
+                }
+            } else {
+                offlineIndicator.style.display = 'none';
+                if (betVisionSystem) {
+                    betVisionSystem.addToHistory('🌐 Conexão restaurada - Online');
+                }
+            }
+        }
+
+        // Gerenciar prompt de instalação PWA
+        let deferredPrompt;
+        const pwaInstallPrompt = document.getElementById('pwaInstallPrompt');
+        const pwaInstallBtn = document.getElementById('pwaInstallBtn');
+        const pwaDismissBtn = document.getElementById('pwaDismissBtn');
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+
+            // Mostrar prompt após 5 segundos
+            setTimeout(() => {
+                if (deferredPrompt && !isAppInstalled()) {
+                    pwaInstallPrompt.style.display = 'block';
+                }
+            }, 5000);
+        });
+
+        pwaInstallBtn.addEventListener('click', async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                if (outcome === 'accepted') {
+                    console.log('Usuário aceitou instalação PWA');
+                    if (betVisionSystem) {
+                        betVisionSystem.addToHistory('📱 App instalado na tela inicial');
+                    }
+                }
+                deferredPrompt = null;
+                pwaInstallPrompt.style.display = 'none';
+            }
+        });
+
+        pwaDismissBtn.addEventListener('click', () => {
+            pwaInstallPrompt.style.display = 'none';
+            // Não mostrar novamente por 30 dias
+            localStorage.setItem('pwaPromptDismissed', Date.now().toString());
+        });
+
+        function isAppInstalled() {
+            return window.matchMedia('(display-mode: standalone)').matches ||
+                window.navigator.standalone ||
+                document.referrer.includes('android-app://');
+        }
+
+        // Verificar se já foi instalado
+        window.addEventListener('appinstalled', () => {
+            console.log('PWA instalado com sucesso');
+            pwaInstallPrompt.style.display = 'none';
+            if (betVisionSystem) {
+                betVisionSystem.addToHistory('📱 App instalado na tela inicial');
+            }
+        });
+
+        // ========== SISTEMA BETVISION PRO ==========
+        class BetVisionPro {
+            constructor() {
+                this.isAnalyzing = false;
+                this.isBlocked = false;
+                this.hasFirstAnalysis = false;
+                this.lastUpdate = Date.now();
+                this.blockTime = 30 * 60 * 1000; // 30 minutos
+                this.blockEndTime = null;
+                this.games = this.initializeGames();
+                this.additionalGames = this.initializeAdditionalGames();
+                this.analysisCount = 0;
+                this.currentTime = new Date();
+                this.userId = '';
+                this.isIdConfirmed = false;
+                this.userEmail = '';
+                this.isLoggedIn = false;
+                this.deviceId = this.getDeviceId();
+
+                this.startBrasiliaTime();
+                this.checkBlockStatus();
+                this.initializeApp();
+                this.setupEventListeners();
+                this.loadStoredData();
+                this.checkLoginStatus();
+
+                // Inicializar status de conexão
+                updateOnlineStatus();
+            }
+
+            getDeviceId() {
+                // Gera um ID único para o dispositivo
+                let deviceId = localStorage.getItem('betvision_device_id');
+                if (!deviceId) {
+                    deviceId = 'device_' + Math.random().toString(36).substr(2, 9) + Date.now().toString(36);
+                    localStorage.setItem('betvision_device_id', deviceId);
+                }
+                return deviceId;
+            }
+
+            checkLoginStatus() {
+                const isLoggedIn = localStorage.getItem('betvision_logged_in');
+                const userEmail = localStorage.getItem('betvision_user_email');
+
+                if (isLoggedIn && userEmail) {
+                    this.isLoggedIn = true;
+                    this.userEmail = userEmail;
+                    document.getElementById('loginModal').style.display = 'none';
+                    this.showTermsModal();
+                } else {
+                    document.getElementById('loginModal').style.display = 'flex';
+                }
+            }
+
+            loadStoredData() {
+                // Carrega dados salvos
+                const savedBlockEnd = localStorage.getItem('betvision_block_end');
+                if (savedBlockEnd) {
+                    this.blockEndTime = parseInt(savedBlockEnd);
+                    this.checkBlockStatus();
+                }
+
+                // Carrega ID do usuário
+                const savedUserId = localStorage.getItem('betvision_user_id');
+                const isIdConfirmed = localStorage.getItem('betvision_id_confirmed');
+
+                if (savedUserId && isIdConfirmed === 'true') {
+                    this.userId = savedUserId;
+                    this.isIdConfirmed = true;
+                    document.getElementById('gameIdInput').value = savedUserId;
+                    document.getElementById('confirmButton').classList.add('confirmed');
+                    document.getElementById('confirmButton').textContent = '✅ ID CONFIRMADO';
+                }
+
+                // Carrega email do usuário
+                const savedEmail = localStorage.getItem('betvision_user_email');
+                if (savedEmail) {
+                    this.userEmail = savedEmail;
+                    document.getElementById('userEmailInput').value = savedEmail;
+                    this.updateEmailPreview();
+                }
+
+                this.showGamePercentages();
+                this.startBlockTimer();
+            }
+
+            updateEmailPreview() {
+                const emailPreview = document.getElementById('emailPreviewText');
+                if (this.userEmail) {
+                    // Mascarar o email (mostrar apenas primeira parte e domínio)
+                    const [username, domain] = this.userEmail.split('@');
+                    const maskedEmail = username.substring(0, 3) + '***@' + domain;
+                    emailPreview.textContent = maskedEmail;
+                } else {
+                    emailPreview.textContent = 'Não definido';
+                }
+            }
+
+            checkBlockStatus() {
+                if (!this.blockEndTime) {
+                    this.isBlocked = false;
+                    return;
+                }
+
+                const now = Date.now();
+
+                if (now < this.blockEndTime) {
+                    this.isBlocked = true;
+                    this.startBlockTimer();
+                } else {
+                    this.isBlocked = false;
+                    this.blockEndTime = null;
+                    localStorage.removeItem('betvision_block_end');
+                    this.addToHistory('✅ Bloqueio liberado - Pronto para nova análise');
+                }
+            }
+
+            setupEventListeners() {
+                const gameIdInput = document.getElementById('gameIdInput');
+                gameIdInput.addEventListener('input', (e) => {
+                    e.target.value = e.target.value.replace(/\D/g, '');
+                    this.userId = e.target.value.trim();
+                    this.validateUserId();
+
+                    if (this.isIdConfirmed) {
+                        this.isIdConfirmed = false;
+                        document.getElementById('confirmButton').classList.remove('confirmed');
+                        document.getElementById('confirmButton').textContent = 'CONFIRMAR ID';
+                        localStorage.removeItem('betvision_id_confirmed');
+                    }
+                });
+
+                // Listener para termos
+                document.getElementById('acceptTerms').addEventListener('change', function () {
+                    document.getElementById('acceptButton').disabled = !this.checked;
+                });
+
+                // Listener para login
+                document.getElementById('loginEmail').addEventListener('input', () => {
+                    this.validateLoginForm();
+                });
+                document.getElementById('loginPassword').addEventListener('input', () => {
+                    this.validateLoginForm();
+                });
+            }
+
+            validateLoginForm() {
+                const email = document.getElementById('loginEmail').value.trim();
+                const password = document.getElementById('loginPassword').value.trim();
+                const loginButton = document.getElementById('loginButton');
+
+                const isValid = email && password && this.validateEmail(email);
+                loginButton.disabled = !isValid;
+            }
+
+            validateEmail(email) {
+                const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                return re.test(email);
+            }
+
+            validateUserId() {
+                const scanButton = document.getElementById('scanButton');
+                const idError = document.getElementById('idError');
+                const idPreview = document.getElementById('idPreview');
+                const idPreviewText = document.getElementById('idPreviewText');
+
+                const isValid = /^\d{6,20}$/.test(this.userId);
+
+                if (isValid) {
+                    idError.style.display = 'none';
+                    idPreview.style.display = 'block';
+                    idPreviewText.textContent = this.userId;
+                } else {
+                    idPreview.style.display = 'none';
+                    if (this.userId.length > 0 && !isValid) {
+                        idError.style.display = 'block';
+                    } else {
+                        idError.style.display = 'none';
+                    }
+                }
+
+                this.updateScanButton();
+            }
+
+            confirmUserId() {
+                const isValid = /^\d{6,20}$/.test(this.userId);
+
+                if (!isValid) {
+                    this.addToHistory('❌ ID inválido. Não foi possível confirmar.');
+                    return;
+                }
+
+                // Verificar se já existe um ID para este dispositivo
+                const existingDeviceId = localStorage.getItem('betvision_device_id');
+                const existingUserId = localStorage.getItem('betvision_user_id');
+
+                if (existingUserId && existingUserId !== this.userId) {
+                    this.addToHistory('❌ Este dispositivo já possui um ID registrado. Não é possível usar mais de um ID por dispositivo.');
+                    return;
+                }
+
+                // Mostrar modal de confirmação
+                document.getElementById('confirmationIdText').textContent = this.userId;
+                document.getElementById('confirmationModal').style.display = 'flex';
+            }
+
+            finalizeUserIdConfirmation() {
+                this.isIdConfirmed = true;
+                document.getElementById('confirmButton').classList.add('confirmed');
+                document.getElementById('confirmButton').textContent = '✅ ID CONFIRMADO';
+
+                localStorage.setItem('betvision_user_id', this.userId);
+                localStorage.setItem('betvision_id_confirmed', 'true');
+
+                this.addToHistory(`✅ ID ${this.userId} confirmado com sucesso`);
+                this.updateScanButton();
+
+                document.getElementById('confirmationModal').style.display = 'none';
+            }
+
+            cancelUserIdConfirmation() {
+                document.getElementById('confirmationModal').style.display = 'none';
+            }
+
+            clearUserId() {
+                this.userId = '';
+                this.isIdConfirmed = false;
+                document.getElementById('gameIdInput').value = '';
+                document.getElementById('confirmButton').classList.remove('confirmed');
+                document.getElementById('confirmButton').textContent = 'CONFIRMAR ID';
+                document.getElementById('idPreview').style.display = 'none';
+                document.getElementById('idError').style.display = 'none';
+
+                localStorage.removeItem('betvision_user_id');
+                localStorage.removeItem('betvision_id_confirmed');
+
+                this.addToHistory('🗑️ ID removido. Digite um novo ID para continuar.');
+                this.updateScanButton();
+            }
+
+            startBlockTimer() {
+                if (this.blockTimer) {
+                    clearInterval(this.blockTimer);
+                }
+
+                if (this.isBlocked && this.blockEndTime) {
+                    this.blockTimer = setInterval(() => {
+                        const now = Date.now();
+                        const timeLeft = this.blockEndTime - now;
+
+                        if (timeLeft <= 0) {
+                            this.isBlocked = false;
+                            this.updateScanButton();
+                            localStorage.removeItem('betvision_block_end');
+                            this.addToHistory('✅ Bloqueio liberado - Pronto para nova análise');
+                            clearInterval(this.blockTimer);
+                        } else {
+                            this.updateBlockTimerDisplay(timeLeft);
+                        }
+                    }, 1000);
+
+                    this.updateBlockTimerDisplay(this.blockEndTime - Date.now());
+                }
+            }
+
+            updateBlockTimerDisplay(timeLeft) {
+                const minutes = Math.floor(timeLeft / 60000);
+                const seconds = Math.floor((timeLeft % 60000) / 1000);
+
+                const timerDisplay = document.getElementById('timerDisplay');
+                if (timerDisplay) {
+                    timerDisplay.textContent = `Bloqueado por ${minutes}:${seconds.toString().padStart(2, '0')}`;
+                    timerDisplay.style.color = '#e74c3c';
+                    timerDisplay.style.fontWeight = '600';
+                }
+            }
+
+            updateScanButton() {
+                const scanButton = document.getElementById('scanButton');
+                const timerDisplay = document.getElementById('timerDisplay');
+
+                const isValidId = /^\d{6,20}$/.test(this.userId);
+
+                if (this.isBlocked) {
+                    scanButton.classList.add('blocked');
+                    scanButton.classList.remove('pulse-glow', 'disabled', 'loading');
+                    scanButton.innerHTML = `
+                        <span>⏳</span>
+                        <div>
+                            <div>ANÁLISE BLOQUEADA</div>
+                            <div class="timer-display" id="timerDisplay"></div>
+                        </div>
+                    `;
+                    if (this.blockEndTime) {
+                        this.updateBlockTimerDisplay(this.blockEndTime - Date.now());
+                    }
+                } else if (!isValidId || !this.isIdConfirmed) {
+                    scanButton.classList.add('disabled');
+                    scanButton.classList.remove('pulse-glow', 'blocked', 'loading');
+                    scanButton.innerHTML = `
+                        <span>🔍</span>
+                        <div>
+                            <div>INICIAR PRIMEIRA ANÁLISE</div>
+                            <div class="timer-display" id="timerDisplay"></div>
+                        </div>
+                    `;
+                    if (timerDisplay) timerDisplay.textContent = '';
+                } else if (this.hasFirstAnalysis) {
+                    scanButton.classList.remove('blocked', 'loading', 'disabled');
+                    scanButton.classList.add('pulse-glow');
+                    scanButton.innerHTML = `
+                        <span>🔍</span>
+                        <div>
+                            <div>ANALISAR NOVAMENTE</div>
+                            <div class="timer-display" id="timerDisplay"></div>
+                        </div>
+                    `;
+                    if (timerDisplay) timerDisplay.textContent = '';
+                } else {
+                    scanButton.classList.remove('blocked', 'loading', 'disabled');
+                    scanButton.classList.add('pulse-glow');
+                    scanButton.innerHTML = `
+                        <span>🔍</span>
+                        <div>
+                            <div>INICIAR PRIMEIRA ANÁLISE</div>
+                            <div class="timerDisplay" id="timerDisplay"></div>
+                        </div>
+                    `;
+                    if (timerDisplay) timerDisplay.textContent = '';
+                }
+            }
+
+            initializeGames() {
+                return [
+                    { id: 'fortunetiger', name: 'Fortune Tiger', icon: '🐯', confidence: 72, trend: 1 },
+                    { id: 'fortunemouse', name: 'Fortune Mouse', icon: '🐭', confidence: 65, trend: -1 },
+                    { id: 'spacexy', name: 'Space XY', icon: '🚀', confidence: 58, trend: 1 },
+                    { id: 'aviator', name: 'Aviator', icon: '✈️', confidence: 81, trend: 1 },
+                    { id: 'sweetbonanza', name: 'Sweet Bonanza', icon: '🍭', confidence: 63, trend: -1 },
+                    { id: 'gatesolympus', name: 'Gates of Olympus', icon: '⚡', confidence: 69, trend: 1 },
+                    { id: 'cashplane', name: 'Cash Plane', icon: '💸', confidence: 76, trend: 1 },
+                    { id: 'wolfgold', name: 'Wolf Gold', icon: '🐺', confidence: 59, trend: -1 }
+                ];
+            }
+
+            initializeAdditionalGames() {
+                return [
+                    { id: 'crazycoin', name: 'Crazy Coin', icon: '🪙', confidence: 71, trend: 1 },
+                    { id: 'dragontreasure', name: 'Dragon Treasure', icon: '🐉', confidence: 64, trend: -1 },
+                    { id: 'mines', name: 'Mines', icon: '💎', confidence: 77, trend: 1 },
+                    { id: 'plinko', name: 'Plinko', icon: '🔴', confidence: 62, trend: -1 },
+                    { id: 'comingsoon1', name: 'Mais em Breve', icon: '🚧', comingSoon: true }
+                ];
+            }
+
+            startBrasiliaTime() {
+                setInterval(() => {
+                    this.updateBrasiliaTime();
+                }, 1000);
+
+                this.updateBrasiliaTime();
+            }
+
+            updateBrasiliaTime() {
+                const now = new Date();
+                const brasiliaOffset = -3 * 60;
+                const localOffset = now.getTimezoneOffset();
+                const brasiliaTime = new Date(now.getTime() + (localOffset + brasiliaOffset) * 60000);
+
+                const hours = brasiliaTime.getHours().toString().padStart(2, '0');
+                const minutes = brasiliaTime.getMinutes().toString().padStart(2, '0');
+                const seconds = brasiliaTime.getSeconds().toString().padStart(2, '0');
+
+                document.getElementById('brasiliaTime').textContent = `${hours}:${minutes}:${seconds}`;
+                this.currentTime = brasiliaTime;
+            }
+
+            calculateOptimalTimes(confidence, gameId) {
+                const currentHour = this.currentTime.getHours();
+                const currentMinute = this.currentTime.getMinutes();
+
+                let startHour, startMinute, endHour, endMinute;
+
+                if (confidence >= 70) {
+                    startHour = currentHour;
+                    startMinute = (currentMinute + 2) % 60;
+                    if (currentMinute + 2 >= 60) startHour = (startHour + 1) % 24;
+
+                    endHour = (startHour + 1) % 24;
+                    endMinute = startMinute;
+                } else if (confidence >= 50) {
+                    startHour = (currentHour + 1) % 24;
+                    startMinute = Math.floor(Math.random() * 30);
+
+                    endHour = (startHour + 2) % 24;
+                    endMinute = startMinute;
+                } else {
+                    startHour = (currentHour + 2) % 24;
+                    startMinute = Math.floor(Math.random() * 45);
+
+                    endHour = (startHour + 1) % 24;
+                    endMinute = startMinute;
+                }
+
+                if (endHour < startHour) {
+                    endHour += 24;
+                }
+
+                return {
+                    start: `${startHour.toString().padStart(2, '0')}:${startMinute.toString().padStart(2, '0')}`,
+                    end: `${endHour.toString().padStart(2, '0')}:${endMinute.toString().padStart(2, '0')}`
+                };
+            }
+
+            isCurrentlyActive(startTime, endTime) {
+                const [startHour, startMinute] = startTime.split(':').map(Number);
+                const [endHour, endMinute] = endTime.split(':').map(Number);
+
+                const currentHour = this.currentTime.getHours();
+                const currentMinute = this.currentTime.getMinutes();
+
+                const currentTotal = currentHour * 60 + currentMinute;
+                const startTotal = startHour * 60 + startMinute;
+                let endTotal = endHour * 60 + endMinute;
+
+                if (endTotal < startTotal) {
+                    endTotal += 24 * 60;
+                }
+
+                return currentTotal >= startTotal && currentTotal <= endTotal;
+            }
+
+            initializeApp() {
+                this.showGamePercentages();
+                this.updateScanButton();
+                this.addToHistory('🚀 OK8 BetVision Pro inicializado');
+
+                if (this.isBlocked) {
+                    this.addToHistory('⏳ Sistema em processamento...');
+                } else {
+                    this.addToHistory('✅ Sistema PRONTO para primeira análise');
+                }
+
+                this.addToHistory('🎯 VERSÃO DEMO - Primeira versão do sistema');
+
+                document.getElementById('signalsValue').textContent = '2';
+                document.getElementById('confidenceValue').textContent = '100%';
+                document.getElementById('statusValue').textContent = this.isBlocked ? 'PROCESSANDO' : 'PRONTO';
+                document.getElementById('statusValue').className = `status-value ${this.isBlocked ? 'analyzing' : 'ready'}`;
+            }
+
+            showGamePercentages() {
+                const grid1 = document.getElementById('gamesGrid1');
+                const grid2 = document.getElementById('gamesGrid2');
+
+                const sortedGames = [...this.games].sort((a, b) => b.confidence - a.confidence);
+                grid1.innerHTML = sortedGames.map(game => {
+                    const confidenceClass = game.confidence >= 60 ? 'high' : game.confidence >= 45 ? 'medium' : 'low';
+                    const trendIcon = game.trend > 0 ? '📈' : '📉';
+                    const trendText = game.trend > 0 ? 'Subindo' : 'Baixando';
+
+                    const timing = this.calculateOptimalTimes(game.confidence, game.id);
+                    const isActive = this.isCurrentlyActive(timing.start, timing.end);
+
+                    return `
+                        <div class="game-card ${confidenceClass} slide-in">
+                            <div class="game-icon">${game.icon}</div>
+                            <div class="game-name">${game.name}</div>
+                            <div class="game-confidence show" style="color: ${this.getConfidenceColor(game.confidence)}">
+                                ${game.confidence}%
+                            </div>
+                            <div class="game-timing">
+                                <div class="timing-item">
+                                    <span class="timing-icon">🟢</span>
+                                    <span class="${isActive ? 'active-now' : ''}">${timing.start}</span>
+                                </div>
+                                <div class="timing-item">
+                                    <span class="timing-icon">🔴</span>
+                                    <span>${timing.end}</span>
+                                </div>
+                            </div>
+                            <div class="game-trend show">
+                                ${trendIcon} ${trendText}
+                            </div>
+                            <button class="strategy-button" onclick="generateStrategy('${game.id}', '${game.name}', '${game.icon}', ${game.confidence})">
+                                🎯 GERAR ESTRATÉGIA
+                            </button>
+                        </div>
+                    `;
+                }).join('');
+
+                grid2.innerHTML = this.additionalGames.map(game => {
+                    if (game.comingSoon) {
+                        return `
+                            <div class="game-card coming-soon slide-in">
+                                <div class="game-icon">${game.icon}</div>
+                                <div class="game-name">${game.name}</div>
+                                <div class="coming-soon-text">EM BREVE</div>
+                            </div>
+                        `;
+                    } else {
+                        const confidenceClass = game.confidence >= 60 ? 'high' : game.confidence >= 45 ? 'medium' : 'low';
+                        const trendIcon = game.trend > 0 ? '📈' : '📉';
+                        const trendText = game.trend > 0 ? 'Subindo' : 'Baixando';
+
+                        const timing = this.calculateOptimalTimes(game.confidence, game.id);
+                        const isActive = this.isCurrentlyActive(timing.start, timing.end);
+
+                        return `
+                            <div class="game-card ${confidenceClass} slide-in">
+                                <div class="game-icon">${game.icon}</div>
+                                <div class="game-name">${game.name}</div>
+                                <div class="game-confidence show" style="color: ${this.getConfidenceColor(game.confidence)}">
+                                    ${game.confidence}%
+                                </div>
+                                <div class="game-timing">
+                                    <div class="timing-item">
+                                        <span class="timing-icon">🟢</span>
+                                        <span class="${isActive ? 'active-now' : ''}">${timing.start}</span>
+                                    </div>
+                                    <div class="timing-item">
+                                        <span class="timing-icon">🔴</span>
+                                        <span>${timing.end}</span>
+                                    </div>
+                                </div>
+                                <div class="game-trend show">
+                                    ${trendIcon} ${trendText}
+                                </div>
+                                <button class="strategy-button" onclick="generateStrategy('${game.id}', '${game.name}', '${game.icon}', ${game.confidence})">
+                                    🎯 GERAR ESTRATÉGIA
+                                </button>
+                            </div>
+                        `;
+                    }
+                }).join('');
+            }
+
+            getConfidenceColor(confidence) {
+                if (confidence >= 60) return '#27ae60';
+                if (confidence >= 45) return '#f39c12';
+                return '#e74c3c';
+            }
+
+            async startAnalysis() {
+                const isValidId = /^\d{6,20}$/.test(this.userId);
+                if (this.isAnalyzing || this.isBlocked || !isValidId || !this.isIdConfirmed) return;
+
+                this.isAnalyzing = true;
+                this.analysisCount++;
+                this.hasFirstAnalysis = true;
+
+                const scanButton = document.getElementById('scanButton');
+                scanButton.innerHTML = '<span class="loading-dots"><span></span><span></span><span></span></span> ANALISANDO';
+                scanButton.classList.add('loading');
+                scanButton.classList.remove('pulse-glow');
+
+                this.updateStatus('ANALISANDO', '25%');
+                this.addToHistory(`🔍 Iniciando análise para ID: ${this.userId}`);
+
+                await this.simulateAnalysisStep('Validando credenciais OK8...', '35%', 800);
+                await this.simulateAnalysisStep('Coletando dados em tempo real...', '55%', 1000);
+                await this.simulateAnalysisStep('Analisando padrões de jogo...', '75%', 1200);
+                await this.simulateAnalysisStep('Calculando horários ideais...', '90%', 800);
+                await this.simulateAnalysisStep('Gerando probabilidades...', '95%', 600);
+
+                this.completeAnalysis();
+            }
+
+            simulateAnalysisStep(message, confidence, delay) {
+                return new Promise(resolve => {
+                    setTimeout(() => {
+                        this.updateStatus('ANALISANDO', confidence);
+                        this.addToHistory(message);
+                        resolve();
+                    }, delay);
+                });
+            }
+
+            completeAnalysis() {
+                this.isAnalyzing = false;
+
+                if (this.hasFirstAnalysis) {
+                    this.isBlocked = true;
+                    this.blockEndTime = Date.now() + this.blockTime;
+                    localStorage.setItem('betvision_block_end', this.blockEndTime.toString());
+                }
+
+                this.updateGameConfidences();
+                this.showGamePercentages();
+                this.updateScanButton();
+                this.updateStatus('PRONTO', '100%');
+                this.addToHistory(`✅ Análise #${this.analysisCount} completa para ${this.userId}`);
+
+                if (this.hasFirstAnalysis) {
+                    this.addToHistory('⏳ Sistema bloqueado por 30 minutos para processamento');
+                    this.startBlockTimer();
+                }
+
+                this.updateScanButton();
+            }
+
+            updateGameConfidences() {
+                this.games.forEach(game => {
+                    const change = (Math.random() - 0.5) * 20;
+                    let newConfidence = game.confidence + change;
+
+                    newConfidence = Math.max(25, Math.min(85, newConfidence));
+
+                    game.confidence = Math.round(newConfidence);
+                    game.trend = change > 0 ? 1 : -1;
+                });
+
+                this.additionalGames.forEach(game => {
+                    if (!game.comingSoon) {
+                        const change = (Math.random() - 0.5) * 20;
+                        let newConfidence = game.confidence + change;
+
+                        newConfidence = Math.max(20, Math.min(80, newConfidence));
+
+                        game.confidence = Math.round(newConfidence);
+                        game.trend = change > 0 ? 1 : -1;
+                    }
+                });
+            }
+
+            updateStatus(status, confidence) {
+                const statusElement = document.getElementById('statusValue');
+                const confidenceElement = document.getElementById('confidenceValue');
+
+                statusElement.textContent = status;
+                statusElement.className = `status-value ${status.toLowerCase()}`;
+                confidenceElement.textContent = confidence;
+            }
+
+            addToHistory(message) {
+                const history = document.getElementById('historyList');
+                const item = document.createElement('div');
+                item.className = 'history-item slide-in';
+
+                const now = new Date();
+                const time = now.getHours().toString().padStart(2, '0') + ':' +
+                    now.getMinutes().toString().padStart(2, '0');
+
+                item.innerHTML = `
+                    <span class="history-time">[${time}]</span>
+                    <span>${message}</span>
+                `;
+                history.appendChild(item);
+                history.scrollTop = history.scrollHeight;
+
+                if (history.children.length > 8) {
+                    history.removeChild(history.firstChild);
+                }
+            }
+
+            showTermsModal() {
+                document.getElementById('termsModal').style.display = 'flex';
+            }
+        }
+
+        // ========== FUNÇÕES GLOBAIS ==========
+        let betVisionSystem;
+
+        // Login
+        function loginUser() {
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value.trim();
+
+            if (!email || !password) {
+                return;
+            }
+
+            // Simulação de login (em um sistema real, isso seria uma chamada de API)
+            localStorage.setItem('betvision_user_email', email);
+            localStorage.setItem('betvision_logged_in', 'true');
+
+            betVisionSystem.isLoggedIn = true;
+            betVisionSystem.userEmail = email;
+
+            document.getElementById('loginModal').style.display = 'none';
+            betVisionSystem.showTermsModal();
+            betVisionSystem.addToHistory('✅ Login realizado com sucesso');
+        }
+
+        // Termos de Uso
+        function acceptTerms() {
+            document.getElementById('termsModal').style.display = 'none';
+            localStorage.setItem('betvision_terms_accepted', 'true');
+            betVisionSystem.addToHistory('✅ Termos de uso aceitos');
+        }
+
+        // Email do usuário
+        function showEmailSection() {
+            document.getElementById('emailSection').style.display = 'block';
+            document.getElementById('contactSection').style.display = 'none';
+            document.getElementById('mainContent').style.display = 'none';
+            closeMenu();
+        }
+
+        function hideEmailSection() {
+            document.getElementById('emailSection').style.display = 'none';
+            document.getElementById('mainContent').style.display = 'block';
+        }
+
+        function saveUserEmail() {
+            const email = document.getElementById('userEmailInput').value.trim();
+            if (email && betVisionSystem.validateEmail(email)) {
+                betVisionSystem.userEmail = email;
+                localStorage.setItem('betvision_user_email', email);
+                betVisionSystem.updateEmailPreview();
+                betVisionSystem.addToHistory('✅ Email salvo com sucesso');
+                hideEmailSection();
+            } else {
+                betVisionSystem.addToHistory('❌ Email inválido');
+            }
+        }
+
+        // Seção de contato
+        function showContactSection() {
+            document.getElementById('contactSection').style.display = 'block';
+            document.getElementById('emailSection').style.display = 'none';
+            document.getElementById('mainContent').style.display = 'none';
+            closeMenu();
+        }
+
+        function hideContactSection() {
+            document.getElementById('contactSection').style.display = 'none';
+            document.getElementById('mainContent').style.display = 'block';
+        }
+
+        function sendContactMessage() {
+            const subject = document.getElementById('contactSubject').value.trim();
+            const message = document.getElementById('contactMessage').value.trim();
+
+            if (!subject || !message) {
+                betVisionSystem.addToHistory('❌ Preencha todos os campos');
+                return;
+            }
+
+            // Simula envio de email
+            const emailBody = `Assunto: ${subject}\n\nMensagem: ${message}\n\nEnviado por: ${betVisionSystem.userEmail || 'Não informado'}`;
+
+            // Aqui você pode integrar com um serviço de email real
+            betVisionSystem.addToHistory('📤 Mensagem enviada para o desenvolvedor');
+            betVisionSystem.addToHistory('💌 Obrigado pelo feedback!');
+
+            // Limpa os campos
+            document.getElementById('contactSubject').value = '';
+            document.getElementById('contactMessage').value = '';
+
+            hideContactSection();
+        }
+
+        // Funções do menu
+        function openMenu() {
+            document.getElementById('sideMenu').classList.add('active');
+            document.getElementById('menuOverlay').classList.add('active');
+        }
+
+        function closeMenu() {
+            document.getElementById('sideMenu').classList.remove('active');
+            document.getElementById('menuOverlay').classList.remove('active');
+        }
+
+        function showInfo(message) {
+            if (message.includes('Sobre o Sistema')) {
+                showDisclaimerModal();
+            } else {
+                if (betVisionSystem) {
+                    betVisionSystem.addToHistory('ℹ️ ' + message);
+                }
+            }
+            closeMenu();
+        }
+
+        function showDisclaimerModal() {
+            const modal = document.createElement('div');
+            modal.className = 'strategy-modal active';
+            modal.innerHTML = `
+                <div class="strategy-content" style="max-width: 350px;">
+                    <div class="strategy-header">
+                        <div class="strategy-game-icon">⚠️</div>
+                        <div class="strategy-title">Aviso Importante</div>
+                    </div>
+                    <div class="strategy-details">
+                        <div style="text-align: center; line-height: 1.6;">
+                            <p style="margin-bottom: 15px; font-weight: 600; color: #e74c3c;">
+                                ESTE APLICATIVO NÃO GARANTE 100% DE GANHOS
+                            </p>
+                            <p style="margin-bottom: 15px;">
+                                O <strong>OK8 BetVision Pro</strong> foi desenvolvido com a intenção de ajudar a <strong>diminuir as perdas</strong> e aumentar suas chances de sucesso, mas <strong>NÃO elimina completamente os riscos</strong>.
+                            </p>
+                            <div style="background: rgba(231, 76, 60, 0.1); padding: 12px; border-radius: 8px; border-left: 4px solid #e74c3c; margin: 15px 0;">
+                                <p style="margin: 0; font-size: 0.9em;">
+                                    <strong>Lembre-se:</strong><br>
+                                    • Apostas envolvem riscos<br>
+                                    • Estabeleça limites<br>
+                                    • Jogue com responsabilidade
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="close-strategy" onclick="closeDisclaimerModal()" style="background: linear-gradient(135deg, #e74c3c, #c0392b);">
+                        ENTENDI E CONCORDO
+                    </button>
+                </div>
+            `;
+
+            document.body.appendChild(modal);
+        }
+
+        function closeDisclaimerModal() {
+            const modal = document.querySelector('.strategy-modal');
+            if (modal) {
+                modal.remove();
+            }
+        }
+
+        function openRegistration() {
+            window.open('https://www.ok8v.com/?pid=189355920', '_blank');
+            closeMenu();
+        }
+
+        // Estratégias para jogos
+        function generateStrategy(gameId, gameName, gameIcon, confidence) {
+            const modal = document.getElementById('strategyModal');
+            const gameIconElement = document.getElementById('strategyGameIcon');
+            const gameNameElement = document.getElementById('strategyGameName');
+            const strategyDetails = document.getElementById('strategyDetails');
+            const tip1 = document.getElementById('strategyTip1');
+            const tip2 = document.getElementById('strategyTip2');
+            const tip3 = document.getElementById('strategyTip3');
+
+            gameIconElement.textContent = gameIcon;
+            gameNameElement.textContent = gameName;
+
+            const strategy = getGameStrategy(gameId, gameName, confidence);
+
+            strategyDetails.textContent = strategy.description;
+            tip1.textContent = strategy.tips[0];
+            tip2.textContent = strategy.tips[1];
+            tip3.textContent = strategy.tips[2];
+
+            modal.classList.add('active');
+        }
+
+        function getGameStrategy(gameId, gameName, confidence) {
+            const currentHour = new Date().getHours();
+            let timeOfDay = '';
+
+            if (currentHour >= 5 && currentHour < 12) timeOfDay = 'manhã';
+            else if (currentHour >= 12 && currentHour < 18) timeOfDay = 'tarde';
+            else timeOfDay = 'noite';
+
+            const baseStrategies = {
+                'fortunetiger': {
+                    description: `🐯 Fortune Tiger - ${confidence}% de Confiança\n\nEstratégia para ${timeOfDay}:`,
+                    tips: [
+                        'Aposte 1-2% do saldo por rodada',
+                        'Observe padrões antes de aumentar',
+                        'Pare após 3 rodadas sem bônus'
+                    ]
+                },
+                'fortunemouse': {
+                    description: `🐭 Fortune Mouse - ${confidence}% de Eficiência\n\nEstratégia para ${timeOfDay}:`,
+                    tips: [
+                        'Mantenha apostas consistentes',
+                        'Horários sugeridos: 18h-21h',
+                        'Gestão de banca é fundamental'
+                    ]
+                },
+                'aviator': {
+                    description: `✈️ Aviator - ${confidence}% de Precisão\n\nEstratégia para ${timeOfDay}:`,
+                    tips: [
+                        'Saque entre 1.8x-2.5x inicial',
+                        'Nunca aposte mais de 5%',
+                        'Use a regra 1-3-2-1'
+                    ]
+                }
+            };
+
+            const additionalStrategies = {
+                'crazycoin': {
+                    description: `🪙 Crazy Coin - ${confidence}% de Lucro\n\nEstratégia para ${timeOfDay}:`,
+                    tips: [
+                        'Gire 8-10 vezes para teste',
+                        'Aumente gradualmente',
+                        'Máximo 15 giros por sessão'
+                    ]
+                },
+                'mines': {
+                    description: `💎 Mines - ${confidence}% de Segurança\n\nEstratégia para ${timeOfDay}:`,
+                    tips: [
+                        'Comece com 3 minas',
+                        'Sempre pelas bordas',
+                        'Retire 50% dos ganhos'
+                    ]
+                }
+            };
+
+            return baseStrategies[gameId] || additionalStrategies[gameId] || {
+                description: `🎮 ${gameName} - ${confidence}% Confiável\n\nEstratégia Básica:`,
+                tips: [
+                    '1-2% do saldo por rodada',
+                    'Estabeleça limites claros',
+                    'Jogue com responsabilidade'
+                ]
+            };
+        }
+
+        function closeStrategy() {
+            const modal = document.getElementById('strategyModal');
+            modal.classList.remove('active');
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            document.querySelectorAll('.tab-button').forEach(button => {
+                button.classList.remove('active');
+            });
+
+            document.getElementById(tabId).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        function startAnalysis() {
+            if (betVisionSystem) {
+                betVisionSystem.startAnalysis();
+            }
+        }
+
+        function confirmUserId() {
+            if (betVisionSystem) {
+                betVisionSystem.confirmUserId();
+            }
+        }
+
+        function finalizeUserIdConfirmation() {
+            if (betVisionSystem) {
+                betVisionSystem.finalizeUserIdConfirmation();
+            }
+        }
+
+        function cancelUserIdConfirmation() {
+            if (betVisionSystem) {
+                betVisionSystem.cancelUserIdConfirmation();
+            }
+        }
+
+        function clearUserId() {
+            if (betVisionSystem) {
+                betVisionSystem.clearUserId();
+            }
+        }
+
+        // Inicializar quando a página carregar
+        document.addEventListener('DOMContentLoaded', function () {
+            betVisionSystem = new BetVisionPro();
+
+            const modal = document.getElementById('strategyModal');
+            modal.addEventListener('click', function (e) {
+                if (e.target === modal) {
+                    closeStrategy();
+                }
+            });
+
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape') {
+                    closeStrategy();
+                    closeDisclaimerModal();
+                }
+            });
+
+            // Prevenir comportamento de recarregamento em PWA
+            if (isAppInstalled()) {
+                document.addEventListener('touchmove', function (e) {
+                    if (e.touches.length > 1) {
+                        e.preventDefault();
+                    }
+                }, { passive: false });
+
+                let lastTouchEnd = 0;
+                document.addEventListener('touchend', function (e) {
+                    const now = Date.now();
+                    if (now - lastTouchEnd <= 300) {
+                        e.preventDefault();
+                    }
+                    lastTouchEnd = now;
+                }, false);
+            }
+        });
+
+        // Adicionar evento para salvar dados antes de fechar
+        window.addEventListener('beforeunload', () => {
+            if (betVisionSystem) {
+                // Salvar dados importantes no localStorage
+                const appData = {
+                    userId: betVisionSystem.userId,
+                    userEmail: betVisionSystem.userEmail,
+                    isIdConfirmed: betVisionSystem.isIdConfirmed,
+                    lastAnalysis: betVisionSystem.lastUpdate,
+                    analysisCount: betVisionSystem.analysisCount
+                };
+                localStorage.setItem('betvision_app_data', JSON.stringify(appData));
+            }
+        });
+
+        // Adicionar evento de visibilidade da página
+        document.addEventListener('visibilitychange', function () {
+            if (document.visibilityState === 'visible' && betVisionSystem) {
+                betVisionSystem.checkBlockStatus();
+                betVisionSystem.updateBrasiliaTime();
+            }
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Offline - BetVision Pro</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0c1a2d 0%, #152642 100%);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+            padding: 40px 30px;
+            background: rgba(16, 30, 52, 0.8);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(80, 120, 200, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #ff6b00, #ffcc00, #00ccff, #ff0066);
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+        
+        .logo-icon {
+            font-size: 40px;
+            color: #ffcc00;
+            margin-right: 15px;
+            text-shadow: 0 0 10px rgba(255, 204, 0, 0.5);
+        }
+        
+        .logo-text {
+            font-size: 32px;
+            font-weight: 700;
+            background: linear-gradient(90deg, #ffcc00, #ff6b00);
+            /* Corrigido: adicionado prefixo vendor e propriedade padrão */
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .offline-icon {
+            font-size: 80px;
+            color: #ff6b00;
+            margin: 20px 0;
+            animation: pulse 2s infinite;
+        }
+        
+        h1 {
+            font-size: 32px;
+            margin-bottom: 15px;
+            color: #ffcc00;
+        }
+        
+        p {
+            font-size: 18px;
+            line-height: 1.6;
+            margin-bottom: 25px;
+            color: #ccd6f6;
+        }
+        
+        .connection-status {
+            display: inline-flex;
+            align-items: center;
+            background: rgba(255, 0, 0, 0.2);
+            padding: 10px 20px;
+            border-radius: 50px;
+            margin: 20px 0;
+            border: 1px solid rgba(255, 0, 0, 0.5);
+        }
+        
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            background: #ff3333;
+            border-radius: 50%;
+            margin-right: 10px;
+            animation: blink 1.5s infinite;
+        }
+        
+        .features {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            margin: 30px 0;
+        }
+        
+        .feature {
+            flex: 1;
+            min-width: 150px;
+            margin: 10px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .feature i {
+            font-size: 24px;
+            color: #00ccff;
+            margin-bottom: 10px;
+        }
+        
+        .feature h3 {
+            font-size: 16px;
+            color: #ffcc00;
+        }
+        
+        .button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(90deg, #ff6b00, #ff9900);
+            color: white;
+            border: none;
+            padding: 14px 30px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 10px;
+            box-shadow: 0 4px 15px rgba(255, 107, 0, 0.4);
+            /* Corrigido: propriedades de background-clip */
+            -webkit-background-clip: padding-box;
+            background-clip: padding-box;
+        }
+        
+        .button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(255, 107, 0, 0.6);
+        }
+        
+        .button i {
+            margin-right: 8px;
+        }
+        
+        .button.secondary {
+            background: linear-gradient(90deg, #2a4b8d, #3a6bd1);
+            box-shadow: 0 4px 15px rgba(58, 107, 209, 0.4);
+            /* Corrigido: propriedades de background-clip */
+            -webkit-background-clip: padding-box;
+            background-clip: padding-box;
+        }
+        
+        .button.secondary:hover {
+            box-shadow: 0 6px 20px rgba(58, 107, 209, 0.6);
+        }
+        
+        .loading-bar {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            margin: 25px 0;
+            overflow: hidden;
+            /* Corrigido: propriedades de background-clip */
+            -webkit-background-clip: padding-box;
+            background-clip: padding-box;
+        }
+        
+        .loading-progress {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #00ccff, #ffcc00);
+            border-radius: 3px;
+            transition: width 0.5s ease;
+            /* Corrigido: propriedades de background-clip */
+            -webkit-background-clip: padding-box;
+            background-clip: padding-box;
+        }
+        
+        .tips {
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            text-align: left;
+            /* Corrigido: propriedades de background-clip */
+            -webkit-background-clip: padding-box;
+            background-clip: padding-box;
+        }
+        
+        .tips h3 {
+            color: #ffcc00;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        
+        .tips ul {
+            padding-left: 20px;
+        }
+        
+        .tips li {
+            margin-bottom: 8px;
+            color: #ccd6f6;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        @keyframes blink {
+            0% { opacity: 1; }
+            50% { opacity: 0.3; }
+            100% { opacity: 1; }
+        }
+        
+        .floating {
+            animation: floating 3s ease-in-out infinite;
+        }
+        
+        @keyframes floating {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                padding: 30px 20px;
+            }
+            
+            h1 {
+                font-size: 26px;
+            }
+            
+            p {
+                font-size: 16px;
+            }
+            
+            .features {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <div class="logo-icon floating">
+                <i class="fas fa-chart-line"></i>
+            </div>
+            <div class="logo-text">BetVision Pro</div>
+        </div>
+        
+        <div class="offline-icon">
+            <i class="fas fa-wifi"></i>
+        </div>
+        
+        <h1>Conecte-se à Internet</h1>
+        
+        <p>Parece que você está offline. Verifique sua conexão com a internet para continuar usando o BetVision Pro.</p>
+        
+        <div class="connection-status">
+            <div class="status-dot"></div>
+            <span>Sem conexão com a internet</span>
+        </div>
+        
+        <div class="loading-bar">
+            <div class="loading-progress" id="loadingProgress"></div>
+        </div>
+        
+        <div class="features">
+            <div class="feature">
+                <i class="fas fa-bolt"></i>
+                <h3>Análise em Tempo Real</h3>
+            </div>
+            <div class="feature">
+                <i class="fas fa-trophy"></i>
+                <h3>Odds Competitivas</h3>
+            </div>
+            <div class="feature">
+                <i class="fas fa-shield-alt"></i>
+                <h3>Transações Seguras</h3>
+            </div>
+        </div>
+        
+        <button class="button" id="retryButton">
+            <i class="fas fa-redo-alt"></i> Tentar Reconectar
+        </button>
+        
+        <button class="button secondary" onclick="showOfflineTips()">
+            <i class="fas fa-lightbulb"></i> Dicas Offline
+        </button>
+        
+        <div class="tips" id="offlineTips" style="display: none;">
+            <h3>Dicas para Resolver Problemas de Conexão</h3>
+            <ul>
+                <li>Verifique se o Wi-Fi ou dados móveis estão ativados</li>
+                <li>Tente reiniciar seu roteador ou modem</li>
+                <li>Mova-se para uma área com melhor recepção</li>
+                <li>Desative temporariamente o VPN, se estiver usando</li>
+                <li>Verifique se o BetVision Pro não está bloqueado pelo firewall</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // Elementos DOM
+        const retryButton = document.getElementById('retryButton');
+        const loadingProgress = document.getElementById('loadingProgress');
+        const offlineTips = document.getElementById('offlineTips');
+        
+        // Função para verificar conexão
+        function checkConnection() {
+            loadingProgress.style.width = '0%';
+            
+            // Simulação de verificação de conexão
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += 5;
+                loadingProgress.style.width = `${progress}%`;
+                
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    
+                    if (navigator.onLine) {
+                        // Conexão restaurada
+                        window.location.href = 'index.html';
+                    } else {
+                        // Ainda offline
+                        setTimeout(() => {
+                            loadingProgress.style.width = '0%';
+                        }, 1000);
+                    }
+                }
+            }, 100);
+        }
+        
+        // Verificar conexão automaticamente a cada 5 segundos
+        setInterval(checkConnection, 5000);
+        
+        // Verificar quando a conexão é restaurada
+        window.addEventListener('online', function() {
+            checkConnection();
+        });
+        
+        // Botão de tentar novamente
+        retryButton.addEventListener('click', checkConnection);
+        
+        // Mostrar dicas offline
+        function showOfflineTips() {
+            offlineTips.style.display = offlineTips.style.display === 'none' ? 'block' : 'none';
+        }
+        
+        // Iniciar verificação quando a página carregar
+        window.addEventListener('load', function() {
+            setTimeout(checkConnection, 1000);
+        });
+    </script>
+</body>
+</html>
