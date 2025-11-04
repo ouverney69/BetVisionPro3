@@ -1,7 +1,7 @@
 {
   "name": "BetVisionPro",
   "short_name": "BetVisionPro",
-  "start_url": "/",
+  "start_url": "\"/\"",
   "display": "standalone",
   "icons": [
    {
@@ -463,5 +463,7 @@
   ],
   "theme_color": "#000000",
   "background_color": "#000000",
-  "description": "Aplicativo que ajuda você em suas operações."
+  "id": "BetVisionPro",
+  "description": "Aplicativo que ajuda você em suas operações",
+  "lang": "pt"
 }
